@@ -1,3 +1,4 @@
 .DS_Store
 *.exe
 snippets.*
+tools/FlaUI/snippets.cs
