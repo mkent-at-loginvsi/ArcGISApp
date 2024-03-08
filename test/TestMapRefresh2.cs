@@ -52,10 +52,9 @@ public class TestMapRefresh2 : ScriptBase
         //FindControlXpathRefresh("FindControlXpathRefresh");
         
         // Refresh and Find Control Native Automation Element
-        CheckAppWindowStatus("FindControlNativeAE");
-        Wait(10);
-        FindControlNativeAERefresh("FindControlNativeAE");
-        
+        //CheckAppWindowStatus("FindControlNativeAE");
+        //Wait(10);
+        //FindControlNativeAERefresh("FindControlNativeAE");
         
         // Refresh and Find Control Find Image
         //CheckAppWindowStatus("FindControlFindImage");
@@ -103,7 +102,6 @@ public class TestMapRefresh2 : ScriptBase
         Log("= END: "+timerName);
         Log("===============================================================================");
     }
-    
     
     // Check App Window Status - Ensures the UI is settled before runnng a test
     private void CheckAppWindowStatus(string timerName){
@@ -216,8 +214,8 @@ public class TestMapRefresh2 : ScriptBase
         var paneBelowMapContainingRefreshWheel = FindAppControl(appWindow, "Custom:MapCoordinateReadoutControl", null, timerName+"_GetButtonParent", mapload_timeout, true);
 
         // Focus the search scope to children of the pane with map controls and find the refresh button
-        var refreshwheel6 = paneBelowMapContainingRefreshWheel.FindControl(className: "Button:Button", title: "Refresh", timeout: mapload_timeout, continueOnError: true);
-        if (refreshwheel6 == null)
+        var checkStatusButtonControl = paneBelowMapContainingRefreshWheel.FindControl(className: "Button:Button", title: "Refresh", timeout: mapload_timeout, continueOnError: true);
+        if (checkStatusButtonControl == null)
         {
             CancelTimer(timerName+"_ClickRefresh");
         }
@@ -229,43 +227,46 @@ public class TestMapRefresh2 : ScriptBase
                 
     }
     
-    private void FindControlNativeAERefresh(string timerName){
-        // Find the App Window and prepare to click the refresh button
-        var uiaWindow = FindAppControlNativeUIA(UIA_PropertyIds.UIA_NamePropertyId, "ArcGIS Pro", "ArcGIS Pro", timerName+"_uiaWindow", mapload_timeout);
+    // private void FindControlNativeAERefresh(string timerName){
+    //     // Find the App Window and prepare to click the refresh button
+    //     var uiaWindow = FindAppControlNativeUIA(UIA_PropertyIds.UIA_NamePropertyId, "ArcGIS Pro", "ArcGIS Pro", timerName+"_uiaWindow", mapload_timeout);
 
-        // Focus the search scope to children of the pane with map controls and find the refresh button
-        // Find the refresh button and prepare to click
-        //var uiaRefreshControl = uiaWindow.FindFirst(TreeScope.TreeScope_Children, automation.CreatePropertyCondition(UIA_PropertyIds.UIA_NamePropertyId, "Refresh"));
-        //if (uiaRefreshControl == null)
-        //{
-        //    CancelTimer(timerName+"_uiaRefreshControl");
-        //}
-        //else 
-        //{
-        //    StopTimer(timerName+"_uiaRefreshControl");
-        //}
-        // Start the timer and click the refresh button
-        //StartTimer(timerName+"_ClickRefresh");
-        //uiaRefreshControl.Click();
+    //     // Find the refresh button and prepare to click
+    //     var uiaRefreshControl = uiaWindow.FindFirst(TreeScope.TreeScope_Descendants, automation.CreatePropertyCondition(UIA_PropertyIds.UIA_NamePropertyId, "Refresh"));
+    //     if (uiaRefreshControl == null)
+    //     {
+    //         CancelTimer(timerName+"_ClickRefresh");
+    //         Log("Refresh Button was not found");
+    //     }
+    //     else 
+    //     {
+    //         // Start the timer and click the refresh button
+    //         StartTimer(timerName+"_ClickRefresh");
+    //         uiaRefreshControl.Click();
+    //         Log("Refresh Button was found: {uiaRefreshControl.CurrentName}");
+    //     }
 
-        // Find the status button and check if the refresh is complete
-        // Refresh the app window and find the status button - Check to see if the button title changed
+    //     // Because the refresh button's state may take a moment to change, we need to wait for the busy indicator to appear (or timeout)
+    //     var i = 0;
+    //     while (!uiaWindow.FindFirst(TreeScope.TreeScope_Descendants, automation.CreatePropertyCondition(UIA_PropertyIds.UIA_NamePropertyId, "Refresh")) && i < 15)
+    //     {
+    //         i++;
+    //         Wait(1);
+    //     }
 
-
-        // Because the refresh button's state may take a moment to change, we need to wait for the busy indicator to appear (or timeout)
-
-        // Now that the busy indicator has passed or timed out, Find the refresh button and check if it is back to pre-click state
-        // Refresh the app window and find the status button
-
-        // Focus the search scope to children of the pane with map controls and find the refresh button
-
-
-
-
-        //var cond = automation.CreatePropertyCondition(propertyId, title);
-        //var uiaWindow = automation.GetRootElement().FindFirst(TreeScope.TreeScope_Children,cond);
-
-    }
+    //     // Refresh the app window and find the status button - Check to see if the button title changed
+    //     uiaRefreshControlStatus = uiaWindow.FindFirst(TreeScope.TreeScope_Descendants, automation.CreatePropertyCondition(UIA_PropertyIds.UIA_NamePropertyId, "Refresh"));
+    //     if (uiaRefreshControlStatus == null)
+    //     {
+    //         CancelTimer(timerName+"timerName+"_ClickRefresh"");
+    //         Log("Refresh Button was not found");
+    //     }
+    //     else 
+    //     {
+    //         StopTimer(timerName+"_ClickRefresh"");
+    //         Log("Refresh Button was not found: {uiRefreshControlStatus.CurrentName}");
+    //     }
+    //}
 
     private void FindControlImageRefresh(string timerName){
         // Find the App Window and prepare to click the refresh button
@@ -409,16 +410,23 @@ public class TestMapRefresh2 : ScriptBase
         return imageFound;
     }
     
-    private IUIAutomationElement FindAppControlNativeUIA(int propertyId, string className, string title, string timerName, int mapload_timeout){
+    private IUIAutomationElement FindAppControlNativeUIA(int propertyId, string className, string value, string timerName, int mapload_timeout){
         Log("===============================================================================");
         Log("= BEGIN: "+timerName);
         Stopwatch stopwatch = Stopwatch.StartNew();
         TakeScreenshot("PRE_"+timerName);
         StartTimer(timerName);
-        var cond = automation.CreatePropertyCondition(propertyId, title);
-        var uiaWindow = automation.GetRootElement().FindFirst(TreeScope.TreeScope_Children,cond);
-        Log($"Element Name: {uiaWindow.CurrentName}");
-        StopTimer(timerName);
+        IUIAutomationCondition cond = automation.CreatePropertyCondition(propertyId, value);
+        IUIAutomationElement uiaWindow = automation.GetRootElement().FindFirst(TreeScope.TreeScope_Descendants,cond);
+        if (uiaWindow == null)
+        {
+            CancelTimer(timerName);
+            Log("Element not found");
+        }else{
+            StopTimer(timerName);
+            Log($"Element Name: {uiaWindow.CurrentName}");
+        }
+        
         TakeScreenshot("POST_"+timerName);
         stopwatch.Stop();
         long elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
@@ -428,37 +436,37 @@ public class TestMapRefresh2 : ScriptBase
         Console.WriteLine($"Task executed in {elapsedMilliseconds} milliseconds");
         Log("= END: "+timerName);
         Log("===============================================================================");
-        return uiaWindow;
+        return uiaWindow!;
     }
     
-    // Sample getting all control properties from a control
-    void CheckRulerState()
-    {
-        Log("##### Checkbox state example");
-        MainWindow.FindControl(className : "TabItem", title : "View").Click();
-        Wait(1);
-        // Move the mouse pointer out of the way, so we can see the checkbox toggles
-        MainWindow.MoveMouseToCenter();
-        var ruler = MainWindow.FindControl(className : "CheckBox", title : "Ruler");
-        LogDetails(ruler);
-        var checkBox = ruler.NativeAutomationElement.GetCurrentPattern(UIA_PatternIds.UIA_TogglePatternId) as IUIAutomationTogglePattern;
-        if (checkBox == null)        
-        {
-            Log("This is not a checkbox");
-            return;
-        }
-        Log($"Ruler is {checkBox.CurrentToggleState}");
-        checkBox.Toggle();
-        Wait(3);
-        Log($"Ruler is {checkBox.CurrentToggleState}");
-        checkBox.Toggle();
-        Wait(3);
-        Log($"Ruler is {checkBox.CurrentToggleState}");
-        Wait(3);
-        MainWindow.FindControl(className : "TabItem", title : "Home").Click();
-        Wait(3);
-        Log("##### Checkbox state example end");
-    }    
+    // Sample getting all control properties from a control via Native Automation Element
+    // void CheckRulerState()
+    // {
+    //     Log("##### Checkbox state example");
+    //     MainWindow.FindControl(className : "TabItem", title : "View").Click();
+    //     Wait(1);
+    //     // Move the mouse pointer out of the way, so we can see the checkbox toggles
+    //     MainWindow.MoveMouseToCenter();
+    //     var ruler = MainWindow.FindControl(className : "CheckBox", title : "Ruler");
+    //     LogDetails(ruler);
+    //     var checkBox = ruler.NativeAutomationElement.GetCurrentPattern(UIA_PatternIds.UIA_TogglePatternId) as IUIAutomationTogglePattern;
+    //     if (checkBox == null)        
+    //     {
+    //         Log("This is not a checkbox");
+    //         return;
+    //     }
+    //     Log($"Ruler is {checkBox.CurrentToggleState}");
+    //     checkBox.Toggle();
+    //     Wait(3);
+    //     Log($"Ruler is {checkBox.CurrentToggleState}");
+    //     checkBox.Toggle();
+    //     Wait(3);
+    //     Log($"Ruler is {checkBox.CurrentToggleState}");
+    //     Wait(3);
+    //     MainWindow.FindControl(className : "TabItem", title : "Home").Click();
+    //     Wait(3);
+    //     Log("##### Checkbox state example end");
+    // }    
     
     void LogDetails(IWindow control)
      {
