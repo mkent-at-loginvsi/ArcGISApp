@@ -272,6 +272,7 @@ public class TestMapRefresh2 : ScriptBase
         var appWindow = FindAppWindow(className : "Wpf Window:Window", title : "MyProject", timerName: timerName+"_AppWindowPreClick", mapload_timeout : 450, continueOnError : true);
         appWindow.MoveMouseToCenter();
 
+        // Find the refresh button and  click
         int x,y;
         StartTimer(timerName+"_FindImage");
         if (!FindImageCenter(appWindow.ToRectangle(), Images.refresh_fullscreen, out x, out y, tolerance:1))
@@ -286,19 +287,29 @@ public class TestMapRefresh2 : ScriptBase
             Log("Moving the mouse to the center of the image");
         }
 
-        // StartTimer(timerName+"_FindAppControlImage");
-        // if (!FindAppControlWithXpath(appWindow, Images.refresh_fullscreen, out x, out y, tolerance:1)
-        // {
-        //     CancelTimer(+"_FindAppControlImage");
-        //     Log("The image was not found");
-        // }
-        // else
-        // {
-        //     StopTimer(+"_FindAppControlImage");
-        //     MouseMove(x,y);
-        //     Log("Moving the mouse to the center of the image");
-        // }
-        
+        // Start the timer and click the refresh button
+        StartTimer(timerName+"_ClickRefresh");
+        Click();
+
+        // Find the status button and check if the refresh is complete
+       
+        var statusButton = FindAppControlImage(appWindow, Images.refresh_fullscreen, timerName+"_getStatusButton", 5);
+        var i = 0;
+        while (statusButton == false && i < 180)
+        {
+            statusButton = FindAppControlImage(appWindow, Images.refresh_fullscreen, timerName+"_getStatusButton", 5);
+            i++;
+            Wait(1);
+        }
+
+        if (statusButton == false)
+        {
+            CancelTimer(timerName+"_ClickRefresh");
+            Log("Status button image was never found");
+        }else{
+            StopTimer(timerName+"_ClickRefresh");
+            Log("Status button image was found");
+        }
 
     }
 
@@ -363,7 +374,7 @@ public class TestMapRefresh2 : ScriptBase
         return appControlXpath;
     }
     
-    private bool FindAppControlImage(IWindow window, Images image, string timerName, int mapload_timeout){
+    private bool FindAppControlImage(IWindow window, string image, string timerName, int mapload_timeout){
         Log("===============================================================================");
         Log("= BEGIN: "+timerName);
         Stopwatch stopwatch = Stopwatch.StartNew();
