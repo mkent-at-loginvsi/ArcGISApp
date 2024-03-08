@@ -42,22 +42,24 @@ public class TestMapRefresh2 : ScriptBase
         // ------------------------
         
         // Refresh and Find Control
-        CheckAppWindowStatus("FindControl");
-        Wait(10);
-        FindControlRefresh("FindControlRefresh");
+        //CheckAppWindowStatus("FindControl");
+        //Wait(10);
+        //FindControlRefresh("FindControlRefresh");
         
         // Refresh and Find Control Xpath
-        CheckAppWindowStatus("FindControlWithXpath");
-        Wait(10);
-        FindControlXpathRefresh("FindControlXpathRefresh");
+        //CheckAppWindowStatus("FindControlWithXpath");
+        //Wait(10);
+        //FindControlXpathRefresh("FindControlXpathRefresh");
         
         // Refresh and Find Control Native Automation Element
         CheckAppWindowStatus("FindControlNativeAE");
-        //FindControlNativeAERefresh("FindControlNativeAE");
+        Wait(10);
+        FindControlNativeAERefresh("FindControlNativeAE");
         
         
         // Refresh and Find Control Find Image
-        CheckAppWindowStatus("FindControlFindImage");
+        //CheckAppWindowStatus("FindControlFindImage");
+        //Wait(10);
         //FindControlImageRefresh("FindControlFindImage");
 
         Wait(10);
@@ -227,6 +229,79 @@ public class TestMapRefresh2 : ScriptBase
                 
     }
     
+    private void FindControlNativeAERefresh(string timerName){
+        // Find the App Window and prepare to click the refresh button
+        var uiaWindow = FindAppControlNativeUIA(UIA_PropertyIds.UIA_NamePropertyId, "ArcGIS Pro", "ArcGIS Pro", timerName+"_uiaWindow", mapload_timeout);
+
+        // Focus the search scope to children of the pane with map controls and find the refresh button
+        // Find the refresh button and prepare to click
+        //var uiaRefreshControl = uiaWindow.FindFirst(TreeScope.TreeScope_Children, automation.CreatePropertyCondition(UIA_PropertyIds.UIA_NamePropertyId, "Refresh"));
+        //if (uiaRefreshControl == null)
+        //{
+        //    CancelTimer(timerName+"_uiaRefreshControl");
+        //}
+        //else 
+        //{
+        //    StopTimer(timerName+"_uiaRefreshControl");
+        //}
+        // Start the timer and click the refresh button
+        //StartTimer(timerName+"_ClickRefresh");
+        //uiaRefreshControl.Click();
+
+        // Find the status button and check if the refresh is complete
+        // Refresh the app window and find the status button - Check to see if the button title changed
+
+
+        // Because the refresh button's state may take a moment to change, we need to wait for the busy indicator to appear (or timeout)
+
+        // Now that the busy indicator has passed or timed out, Find the refresh button and check if it is back to pre-click state
+        // Refresh the app window and find the status button
+
+        // Focus the search scope to children of the pane with map controls and find the refresh button
+
+
+
+
+        //var cond = automation.CreatePropertyCondition(propertyId, title);
+        //var uiaWindow = automation.GetRootElement().FindFirst(TreeScope.TreeScope_Children,cond);
+
+    }
+
+    private void FindControlImageRefresh(string timerName){
+        // Find the App Window and prepare to click the refresh button
+        var appWindow = FindAppWindow(className : "Wpf Window:Window", title : "MyProject", timerName: timerName+"_AppWindowPreClick", mapload_timeout : 450, continueOnError : true);
+        appWindow.MoveMouseToCenter();
+
+        int x,y;
+        StartTimer(timerName+"_FindImage");
+        if (!FindImageCenter(appWindow.ToRectangle(), Images.refresh_fullscreen, out x, out y, tolerance:1))
+        {
+            CancelTimer(timerName+"_FindImage");
+            Log("The image was not found");
+        }
+        else
+        {
+            StopTimer(timerName+"_FindImage");
+            MouseMove(x,y);
+            Log("Moving the mouse to the center of the image");
+        }
+
+        // StartTimer(timerName+"_FindAppControlImage");
+        // if (!FindAppControlWithXpath(appWindow, Images.refresh_fullscreen, out x, out y, tolerance:1)
+        // {
+        //     CancelTimer(+"_FindAppControlImage");
+        //     Log("The image was not found");
+        // }
+        // else
+        // {
+        //     StopTimer(+"_FindAppControlImage");
+        //     MouseMove(x,y);
+        //     Log("Moving the mouse to the center of the image");
+        // }
+        
+
+    }
+
     private IWindow FindAppWindow(string className, string title, string timerName, int mapload_timeout, bool continueOnError){
         Log("===============================================================================");
         Log("= BEGIN: "+timerName);
@@ -288,7 +363,7 @@ public class TestMapRefresh2 : ScriptBase
         return appControlXpath;
     }
     
-    private bool FindAppControlImage(IWindow window, string image, string timerName, int mapload_timeout){
+    private bool FindAppControlImage(IWindow window, Images image, string timerName, int mapload_timeout){
         Log("===============================================================================");
         Log("= BEGIN: "+timerName);
         Stopwatch stopwatch = Stopwatch.StartNew();
@@ -298,7 +373,7 @@ public class TestMapRefresh2 : ScriptBase
         int x,y;
         bool imageFound;
         
-        if (!FindImageCenter(MainWindow.ToRectangle(), Images.refresh_fullscreen, out x, out y, tolerance:1))
+        if (!FindImageCenter(window.ToRectangle(), image, out x, out y, tolerance:1))
         {
             CancelTimer(timerName);
             imageFound = false;
