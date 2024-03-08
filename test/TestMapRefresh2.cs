@@ -295,6 +295,9 @@ public class TestMapRefresh2 : ScriptBase
        
         var statusButton = FindAppControlImage(appWindow, Images.refresh_fullscreen, timerName+"_getStatusButton", 5);
         var i = 0;
+        
+        // Because the refresh button's state may take a moment to change, we need to wait for the busy indicator to appear (or timeout)
+        Wait(5);
         while (statusButton == false && i < 180)
         {
             statusButton = FindAppControlImage(appWindow, Images.refresh_fullscreen, timerName+"_getStatusButton", 5);
