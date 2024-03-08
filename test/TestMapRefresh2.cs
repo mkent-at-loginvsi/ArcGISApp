@@ -135,17 +135,23 @@ public class TestMapRefresh2 : ScriptBase
     }
     
     private void FindControlRefresh(string timerName){
+        // Find the App Window and prepare to click the refresh button
         var appWindow = FindAppWindow(className : "Wpf Window:Window", title : "MyProject", timerName: timerName+"_AppWindowPreClick", mapload_timeout : 450, continueOnError : true);
         appWindow.MoveMouseToCenter();
         
+        // Find the refresh button and prepare to click
         var refreshControl = FindAppControl(appWindow, "Button:Button", "Refresh", timerName+"_RefreshControl", mapload_timeout, true);
 
+        // Start the timer and click the refresh button
         StartTimer(timerName+"_ClickRefresh");
         refreshControl.Click();
-        
+
+        // Find the status button and check if the refresh is complete
+        // Refresh the app window and find the status button - Check to see if the button title changed 
         appWindow = FindAppWindow(className : "Wpf Window:Window", title : "MyProject", timerName: timerName+"_AppWindowPostClick", mapload_timeout : 450, continueOnError : true);
         appWindow.MoveMouseToCenter();
-                
+        
+        // Because the refresh button's state may take a moment to change, we need to wait for the busy indicator to appear (or timeout)
         var statusButton = FindAppControl(appWindow, className : "Button:Button", title : "Drawing.  Click to cancel.", timerName+"_getStatusButton", mapload_timeout, true);
         if (statusButton == null)
         {
@@ -154,8 +160,11 @@ public class TestMapRefresh2 : ScriptBase
             Log($"statusButton Title: {statusButton.GetTitle()}");
         }
         
+        // Now that the busy indicator has passed or timed out, Find the refresh button and check if it is back to pre-click state
+        // Refresh the app window and find the status button
         var paneBelowMapContainingRefreshWheel = FindAppControl(appWindow, "Custom:MapCoordinateReadoutControl", title: "", timerName+"_CheckStatus", mapload_timeout, true);
         
+        // Focus the search scope to children of the pane with map controls and find the refresh button
         var checkStatusButton = paneBelowMapContainingRefreshWheel.FindControl(className: "Button:Button", title: "Refresh", timeout: mapload_timeout, continueOnError: true);
         if (checkStatusButton == null)
         {
@@ -170,39 +179,52 @@ public class TestMapRefresh2 : ScriptBase
     }
     
     private void FindControlXpathRefresh(string timerName){
+        // Find the App Window and prepare to click the refresh button
         var appWindow = FindAppWindow(className : "Wpf Window:Window", title : "MyProject", timerName: timerName+"_AppWindow", mapload_timeout : 450, continueOnError : true);
         appWindow.MoveMouseToCenter();
         
+        // Focus the search scope to children of the pane with map controls and find the refresh button
         var strXpathRefreshPanel = "Group:FrameworkDockSite/Group:DockHost/Group:SplitContainer/Pane:Workspace/Tab:TabbedMdiContainer/TabItem:DockingWindowContainerTabItem/Pane:DocumentWindow/Custom:MapPaneView/Custom:MapCoordinateReadoutControl";
         var refreshControlPanel = FindAppControlWithXpath(appWindow, strXpathRefreshPanel, timerName+"_refreshcontrol", mapload_timeout, true);
         
+        // Find the refresh button and prepare to click
         var strXpathRefreshControl = "Button:Button";
         var refreshControl = FindAppControlWithXpath(refreshControlPanel, strXpathRefreshControl, timerName+"_refreshcontrol", mapload_timeout, true);
-        refreshControl.Click();
- 
         
-        var statusButton = FindAppControl(appWindow, className : "Button:Button", title : "Drawing.  Click to cancel.", timerName+"_getStatusButton", mapload_timeout, true);
+        // Start the timer and click the refresh button
+        StartTimer(timerName+"_ClickRefresh");
+        refreshControl.Click();
+
+        // Find the status button and check if the refresh is complete
+        // Refresh the app window and find the status button - Check to see if the button title changed 
+        var appWindow = FindAppWindow(className : "Wpf Window:Window", title : "MyProject", timerName: timerName+"_AppWindow", mapload_timeout : 450, continueOnError : true);
+        appWindow.MoveMouseToCenter();
+        
+        // Because the refresh button's state may take a moment to change, we need to wait for the busy indicator to appear (or timeout)
+        var statusButton = FindAppControlWithXpath(appWindow, className : "Button:Button", title : "Drawing.  Click to cancel.", timerName+"_getStatusButton", mapload_timeout, true);
         if (statusButton == null)
         {
             Log("'Drawing.  Click to cancel.' was never found");
         }else{
             Log($"statusButton Title: {statusButton.GetTitle()}");
         }
-        
+
+        // Now that the busy indicator has passed or timed out, Find the refresh button and check if it is back to pre-click state
+        // Refresh the app window and find the status button        
         var paneBelowMapContainingRefreshWheel = FindAppControl(appWindow, "Custom:MapCoordinateReadoutControl", null, timerName+"_GetButtonParent", mapload_timeout, true);
-        
+
+        // Focus the search scope to children of the pane with map controls and find the refresh button
         var refreshwheel6 = paneBelowMapContainingRefreshWheel.FindControl(className: "Button:Button", title: "Refresh", timeout: mapload_timeout, continueOnError: true);
         if (refreshwheel6 == null)
         {
-            CancelTimer("000_ArcGISPro_1_1000_Map");
+            CancelTimer(timerName+"_ClickRefresh");
         }
         else 
         {
-            StopTimer("000_ArcGISPro_1_1000_Map");
+            StopTimer(timerName+"_ClickRefresh");
         }
-        TakeScreenshot("000_ArcGISPro_1000_Loaded");
-        refreshControl.Click();
-        
+        TakeScreenshot(timerName+"_ClickRefresh");
+                
     }
     
     private IWindow FindAppWindow(string className, string title, string timerName, int mapload_timeout, bool continueOnError){
