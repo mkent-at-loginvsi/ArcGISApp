@@ -43,14 +43,13 @@ public class TestMapRefresh2 : ScriptBase
         
         // Refresh and Find Control
         CheckAppWindowStatus("FindControl");
+        Wait(10);
         FindControlRefresh("FindControlRefresh");
-        
-        
         
         // Refresh and Find Control Xpath
         CheckAppWindowStatus("FindControlWithXpath");
-        //FindControlXpathRefresh("FindControlXpathRefresh");
-
+        Wait(10);
+        FindControlXpathRefresh("FindControlXpathRefresh");
         
         // Refresh and Find Control Native Automation Element
         CheckAppWindowStatus("FindControlNativeAE");
@@ -152,7 +151,8 @@ public class TestMapRefresh2 : ScriptBase
         appWindow.MoveMouseToCenter();
         
         // Because the refresh button's state may take a moment to change, we need to wait for the busy indicator to appear (or timeout)
-        var statusButton = FindAppControl(appWindow, className : "Button:Button", title : "Drawing.  Click to cancel.", timerName+"_getStatusButton", mapload_timeout, true);
+        //var statusButton = FindAppControl(appWindow, className : "Button:Button", title : "Drawing.  Click to cancel.", timerName+"_getStatusButton", mapload_timeout, true);
+        var statusButton = appWindow.FindControl(className : "Button:Button", title : "Drawing.  Click to cancel.", searchRecursively : false, timeout: 5,continueOnError :  true);
         if (statusButton == null)
         {
             Log("'Drawing.  Click to cancel.' was never found");
@@ -180,16 +180,16 @@ public class TestMapRefresh2 : ScriptBase
     
     private void FindControlXpathRefresh(string timerName){
         // Find the App Window and prepare to click the refresh button
-        var appWindow = FindAppWindow(className : "Wpf Window:Window", title : "MyProject", timerName: timerName+"_AppWindow", mapload_timeout : 450, continueOnError : true);
+        var appWindow = FindAppWindow(className : "Wpf Window:Window", title : "MyProject", timerName: timerName+"_AppWindowPreClick", mapload_timeout : 450, continueOnError : true);
         appWindow.MoveMouseToCenter();
         
         // Focus the search scope to children of the pane with map controls and find the refresh button
         var strXpathRefreshPanel = "Group:FrameworkDockSite/Group:DockHost/Group:SplitContainer/Pane:Workspace/Tab:TabbedMdiContainer/TabItem:DockingWindowContainerTabItem/Pane:DocumentWindow/Custom:MapPaneView/Custom:MapCoordinateReadoutControl";
-        var refreshControlPanel = FindAppControlWithXpath(appWindow, strXpathRefreshPanel, timerName+"_refreshcontrol", mapload_timeout, true);
+        var refreshControlPanel = FindAppControlWithXpath(appWindow, strXpathRefreshPanel, timerName+"_refreshControlPanel", mapload_timeout, true);
         
         // Find the refresh button and prepare to click
         var strXpathRefreshControl = "Button:Button";
-        var refreshControl = FindAppControlWithXpath(refreshControlPanel, strXpathRefreshControl, timerName+"_refreshcontrol", mapload_timeout, true);
+        var refreshControl = FindAppControlWithXpath(refreshControlPanel, strXpathRefreshControl, timerName+"_refreshControl", mapload_timeout, true);
         
         // Start the timer and click the refresh button
         StartTimer(timerName+"_ClickRefresh");
@@ -197,11 +197,11 @@ public class TestMapRefresh2 : ScriptBase
 
         // Find the status button and check if the refresh is complete
         // Refresh the app window and find the status button - Check to see if the button title changed 
-        var appWindow = FindAppWindow(className : "Wpf Window:Window", title : "MyProject", timerName: timerName+"_AppWindow", mapload_timeout : 450, continueOnError : true);
+        appWindow = FindAppWindow(className : "Wpf Window:Window", title : "MyProject", timerName: timerName+"_AppWindowPostClick", mapload_timeout : 450, continueOnError : true);
         appWindow.MoveMouseToCenter();
         
         // Because the refresh button's state may take a moment to change, we need to wait for the busy indicator to appear (or timeout)
-        var statusButton = FindAppControlWithXpath(appWindow, className : "Button:Button", title : "Drawing.  Click to cancel.", timerName+"_getStatusButton", mapload_timeout, true);
+        var statusButton = FindAppControlWithXpath(appWindow, xpath : "Button:Button", timerName+"_getStatusButton", 5, true);
         if (statusButton == null)
         {
             Log("'Drawing.  Click to cancel.' was never found");
