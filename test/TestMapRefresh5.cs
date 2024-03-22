@@ -6,6 +6,7 @@ public class ArcGISPro : ScriptBase
 {
     void Execute() 
     {
-        CreateTimer("OpenMainWindow");
+        
+        StartTimer("OpenMainWindow").GetType();
     }
 }
