@@ -411,6 +411,10 @@ public class TestMapRefresh2 : ScriptBase
     }
     
     private IUIAutomationElement FindAppControlNativeUIA(int propertyId, string className, string value, string timerName, int mapload_timeout){
+
+
+
+        
         Log("===============================================================================");
         Log("= BEGIN: "+timerName);
         Stopwatch stopwatch = Stopwatch.StartNew();
