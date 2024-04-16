@@ -19,11 +19,10 @@ public class ArcGISPro : ScriptBase
     void Execute() 
     {
         try{
-            step_setup();
+            //step_setup();
+
             step_app_start_time();
             step_001_arcgispro_loginpage();
-            
-            /*
             step_move_start_position_wait();
             step_002_arcgispro_mainwindow();
             step_003_arcgispro_selectedmap();
@@ -34,9 +33,8 @@ public class ArcGISPro : ScriptBase
             step_007_arcgispro_1_1000_map();
             step_009_arcgispro_1_560_map();
             step_010_arcgispro_1_10500_map();
-            */
-            Wait(5);
-            step_teardown();
+
+            //step_teardown();
         }
         catch (System.Runtime.InteropServices.COMException ex)
         {
@@ -44,7 +42,6 @@ public class ArcGISPro : ScriptBase
             System.Console.WriteLine("A script not responding error occurred: " + ex.Message);
             // You can add additional logic here to handle the error, such as retrying the operation or displaying a user-friendly message
         }
-
     }
     
     // Steps
@@ -62,112 +59,6 @@ public class ArcGISPro : ScriptBase
         // Locate ArcGIS Sign In Window
         START(mainWindowTitle : "ArcGIS Sign In", processName: "ArcGISPro");
 
-        TakeScreenshot($"{stepName}");
-    }
-    
-    public void step_teardown(){
-        // Place any post test case/ test suite cleanup actions here. These are actions that are not timed as part of the test case.
-        string stepName = System.Reflection.MethodBase.GetCurrentMethod().Name;
-        Log($"{stepName}");
-        
-        // Logout for arcGISpro
-        // Find window "Wpf Window:Window" (sign out window)
-        var mapWindow = FindWindow(className: "Wpf Window:Window", title: "ArcGIS Sign In", processName: "ArcGISPro",timeout:30);
-        if(mapWindow != null)
-        {
-            Log($"Successfully found element: sign out window");
-        }
-        else
-        {
-            Log($"Failed to find element: Wpf Window:Window");
-        }
-        
-        // LeftClick on Buttion "PopupButton"
-        var btnPopup = mapWindow.FindControlWithXPath(xPath: "MenuBar:Ribbon/Button:PopupButton", timeout: 60, continueOnError: true);
-        if(btnPopup != null)
-        {
-            btnPopup.Click();
-        }
-        else
-        {
-            Log($"Failed to find element: PopupButton");
-        }
-        
-        // LeftClick on Button "SignOnStatusView"
-        var btnSignOut = mapWindow.FindControlWithXPath(xPath: "Wpf Window:Popup/Custom:SignOnUserControlView/Custom:SignOnStatusView/Button:Button/Text:TextBlock",timeout:60, continueOnError:true);
-        if(btnSignOut != null)
-        {
-            btnSignOut.Click();
-        }
-        else
-        {
-            Log($"Failed to find element: SignOnStatusView Button");
-        }
-        
-        //Wait(60);
-        try
-        {
-            var SignInWindowlast1 = FindWindow(className: "Wpf Window:Window", title: "ArcGIS Sign In", processName: "ArcGISPro",timeout:30);
-            SignInWindowlast1.FindControl(className : "Button:Button", title : "Close").Click();
-            Wait(5);
-            var SignInWindowlast2 = FindWindow(className: "Wpf Window:Window", title: "ArcGIS Sign In", processName: "ArcGISPro",timeout:30);
-            SignInWindowlast2.FindControl(className : "Button:Button", title : "Close").Click();
-            Wait(5);
-            var SignInWindowlast3 = FindWindow(className: "Wpf Window:Window", title: "ArcGIS Sign In", processName: "ArcGISPro",timeout:30);
-            SignInWindowlast3.FindControl(className : "Button:Button", title : "Close").Click();
-            Wait(80);
-         }
-         catch
-         {
-            Wait(80);
-            mapWindow.FindControl(className : "Image:Image", timeout: 60, continueOnError: true);
-            mapWindow.FindControl(className : "Button:Button", title : "Close",timeout:90).Click();
-            TakeScreenshot("016_ArcGISPro_CloseProject");
-            
-        
-            //final checkbox for closing the project
-            Wait(5);
-            var checbox_closing =FindWindow(className : "Wpf Window:Window", title : "ArcGIS Project",timeout:60);
-            TakeScreenshot("017_ArcGISPro_SaveProject_Checkbox");
-            checbox_closing.FindControl(className : "Button:Button", title : "No",timeout:30).Click();
-            
-            Wait(5);
-          }
-      // Close web brower window
-      var winBrowserSignIn = FindWindow(title : "Sign In * Microsoft​ Edge", className : "Win32 Window:Chrome_WidgetWin_1", processName : "msedge");
-        if(winBrowserSignIn != null){
-            winBrowserSignIn.Close();
-        }
-      
-    }
-    
-    public void step_move_start_position_wait(){
-        // 
-        string stepName = System.Reflection.MethodBase.GetCurrentMethod().Name;
-        Log($"{stepName}");
-        StartTimer($"{stepName}");
-        
-        //var winArcGISProSignIn = MainWindow;
-        //Wait(Globals.waitBetweenSteps);
-
-        StopTimer($"{stepName}");
-        TakeScreenshot($"{stepName}");
-    }
-    
-    public void step_validate_app_responsive(){
-        // The 
-        string stepName = System.Reflection.MethodBase.GetCurrentMethod().Name;
-        Log($"{stepName}");
-
-        StopTimer($"{stepName}");
-        TakeScreenshot($"{stepName}");
-    }
-    
-    public void step_activate_help_TabAndButton(){
-        string stepName = System.Reflection.MethodBase.GetCurrentMethod().Name;
-        Log($"{stepName}");
-
-        StopTimer($"{stepName}");
         TakeScreenshot($"{stepName}");
     }
     
@@ -336,6 +227,111 @@ public class ArcGISPro : ScriptBase
         string stepName = System.Reflection.MethodBase.GetCurrentMethod().Name;
         Log($"{stepName}");
         StartTimer($"{stepName}");
+
+        StopTimer($"{stepName}");
+        TakeScreenshot($"{stepName}");
+    }
+
+public void step_teardown(){
+        // Place any post test case/ test suite cleanup actions here. These are actions that are not timed as part of the test case.
+        string stepName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+        Log($"{stepName}");
+        
+        // Logout for arcGISpro
+        // Find window "Wpf Window:Window" (sign out window)
+        var mapWindow = FindWindow(className: "Wpf Window:Window", title: "ArcGIS Sign In", processName: "ArcGISPro",timeout:30);
+        if(mapWindow != null)
+        {
+            Log($"Successfully found element: sign out window");
+        }
+        else
+        {
+            Log($"Failed to find element: Wpf Window:Window");
+        }
+        
+        // LeftClick on Buttion "PopupButton"
+        var btnPopup = mapWindow.FindControlWithXPath(xPath: "MenuBar:Ribbon/Button:PopupButton", timeout: 60, continueOnError: true);
+        if(btnPopup != null)
+        {
+            btnPopup.Click();
+        }
+        else
+        {
+            Log($"Failed to find element: PopupButton");
+        }
+        
+        // LeftClick on Button "SignOnStatusView"
+        var btnSignOut = mapWindow.FindControlWithXPath(xPath: "Wpf Window:Popup/Custom:SignOnUserControlView/Custom:SignOnStatusView/Button:Button/Text:TextBlock",timeout:60, continueOnError:true);
+        if(btnSignOut != null)
+        {
+            btnSignOut.Click();
+        }
+        else
+        {
+            Log($"Failed to find element: SignOnStatusView Button");
+        }
+        
+        //Wait(60);
+        try
+        {
+            var SignInWindowlast1 = FindWindow(className: "Wpf Window:Window", title: "ArcGIS Sign In", processName: "ArcGISPro",timeout:30);
+            SignInWindowlast1.FindControl(className : "Button:Button", title : "Close").Click();
+            Wait(5);
+            var SignInWindowlast2 = FindWindow(className: "Wpf Window:Window", title: "ArcGIS Sign In", processName: "ArcGISPro",timeout:30);
+            SignInWindowlast2.FindControl(className : "Button:Button", title : "Close").Click();
+            Wait(5);
+            var SignInWindowlast3 = FindWindow(className: "Wpf Window:Window", title: "ArcGIS Sign In", processName: "ArcGISPro",timeout:30);
+            SignInWindowlast3.FindControl(className : "Button:Button", title : "Close").Click();
+            Wait(80);
+        }
+        catch        {
+            Wait(80);
+            mapWindow.FindControl(className : "Image:Image", timeout: 60, continueOnError: true);
+            mapWindow.FindControl(className : "Button:Button", title : "Close",timeout:90).Click();
+            TakeScreenshot("016_ArcGISPro_CloseProject");
+            
+        
+            //final checkbox for closing the project
+            Wait(5);
+            var checbox_closing =FindWindow(className : "Wpf Window:Window", title : "ArcGIS Project",timeout:60);
+            TakeScreenshot("017_ArcGISPro_SaveProject_Checkbox");
+            checbox_closing.FindControl(className : "Button:Button", title : "No",timeout:30).Click();
+            
+            Wait(5);
+        }
+      
+        // Close web brower window
+        var winBrowserSignIn = FindWindow(title : "Sign In * Microsoft​ Edge", className : "Win32 Window:Chrome_WidgetWin_1", processName : "msedge");
+        if(winBrowserSignIn != null){
+            winBrowserSignIn.Close();
+        } 
+    }
+    
+    public void step_move_start_position_wait(){
+        // 
+        string stepName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+        Log($"{stepName}");
+        StartTimer($"{stepName}");
+        
+        //var winArcGISProSignIn = MainWindow;
+        //Wait(Globals.waitBetweenSteps);
+
+        StopTimer($"{stepName}");
+        TakeScreenshot($"{stepName}");
+    }
+    
+    public void step_validate_app_responsive(){
+        // The 
+        string stepName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+        Log($"{stepName}");
+
+        StopTimer($"{stepName}");
+        TakeScreenshot($"{stepName}");
+    }
+    
+    public void step_activate_help_TabAndButton(){
+        string stepName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+        Log($"{stepName}");
 
         StopTimer($"{stepName}");
         TakeScreenshot($"{stepName}");
