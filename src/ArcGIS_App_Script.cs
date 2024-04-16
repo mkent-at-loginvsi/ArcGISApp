@@ -232,7 +232,7 @@ public class ArcGISPro : ScriptBase
         TakeScreenshot($"{stepName}");
     }
 
-public void step_teardown(){
+    public void step_teardown(){
         // Place any post test case/ test suite cleanup actions here. These are actions that are not timed as part of the test case.
         string stepName = System.Reflection.MethodBase.GetCurrentMethod().Name;
         Log($"{stepName}");
@@ -306,7 +306,8 @@ public void step_teardown(){
             winBrowserSignIn.Close();
         } 
     }
-    
+
+    // Validators    
     public void step_move_start_position_wait(){
         // 
         string stepName = System.Reflection.MethodBase.GetCurrentMethod().Name;
