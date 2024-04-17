@@ -20,8 +20,20 @@ public class ArcGISPro : ScriptBase
     {
         try{
             Log($"Executing Script: {ScriptName}");
-
-
+            step_app_start_time();
+            step_001_arcgispro_loginpage();
+            step_002_arcgispro_mainwindow();
+            step_003_arcgispro_selectedmap();
+            step_004_arcgispro_selectedlocation();
+            step_towards_up();
+            step_towards_down();
+            step_towards_left();
+            step_towards_right();
+            step_007_arcgispro_1_1000_map();
+            step_008_arcgispro_1_25000_map();
+            step_009_arcgispro_1_560_map();
+            step_010_arcgispro_1_10500_map();
+            step_arcgispro_logout();
         }
         catch (System.Runtime.InteropServices.COMException ex)
         {
@@ -438,6 +450,8 @@ public class ArcGISPro : ScriptBase
         string stepName = System.Reflection.MethodBase.GetCurrentMethod().Name;
         Log($"{stepName}");
         StartTimer($"{stepName}");
+
+        MainWindow.FindControl(className : "SplitButton:SplitButton", title : "Explore").Click();
         
         StopTimer($"{stepName}");
         TakeScreenshot($"{stepName}");
@@ -448,6 +462,8 @@ public class ArcGISPro : ScriptBase
         string stepName = System.Reflection.MethodBase.GetCurrentMethod().Name;
         Log($"{stepName}");
 
+        step_activate_help_TabAndButton();
+
         StopTimer($"{stepName}");
         TakeScreenshot($"{stepName}");
     }
@@ -455,6 +471,8 @@ public class ArcGISPro : ScriptBase
     public void step_activate_help_TabAndButton(){
         string stepName = System.Reflection.MethodBase.GetCurrentMethod().Name;
         Log($"{stepName}");
+
+        MainWindow.FindControl(className : "Button:ProButton", title : "Diagnostic Monitor").Click();
 
         StopTimer($"{stepName}");
         TakeScreenshot($"{stepName}");
