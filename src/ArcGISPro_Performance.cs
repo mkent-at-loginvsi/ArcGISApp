@@ -19,6 +19,8 @@ public class ArcGISPro : ScriptBase
             
             //================================================================================
             int mapload_timeout = 180;
+            //string projectTitle = "As-Built Editing - NYC - As-Built Pressure View - NYC - ArcGIS Pro";
+            string projectTitle = "MyProject";
             int step_wait = 5;
             bool altLogin = true;
             
@@ -36,6 +38,7 @@ public class ArcGISPro : ScriptBase
             Wait(step_wait);
             Log("===> App_Start_Time");
             START(mainWindowTitle: "ArcGIS Sign In", processName: "ArcGISPro");
+            Log($"{IsHungAppWindow(MainWindow.NativeWindowHandle)}");
             
             // ===============================================================================
             // Step No: 2
@@ -59,7 +62,6 @@ public class ArcGISPro : ScriptBase
             if(altLogin){
             Log("altLogin detected.");
                 CheckSignInEdgeWindow();
-                Wait(step_wait);
                 SignInEdgeWindow();
             }else{
 
@@ -186,7 +188,10 @@ public class ArcGISPro : ScriptBase
     
             // Screenshot Map Load
             TakeScreenshot("003_ArcGISPro_SelectedMap_Loaded");
+            
             }
+            
+            
             
             // ===============================================================================
             // Step No: 6
@@ -201,18 +206,82 @@ public class ArcGISPro : ScriptBase
             Log($"===> 007_ArcGISPro_1_1000_Map");
             TakeScreenshot("007_ArcGISPro_1_1000_Map");
             
+            var mapWindow007 = FindWindow(className : "Wpf Window:Window", title : projectTitle,timeout:450,continueOnError:true);
+            var paneBelowMapContainingRefreshWheel = mapWindow007.FindControlWithXPath(xPath : "Group:FrameworkDockSite/Group:DockHost/Group:SplitContainer/Pane:Workspace/Tab:TabbedMdiContainer/TabItem:DockingWindowContainerTabItem/Pane:DocumentWindow/Custom:MapPaneView/Custom:MapCoordinateReadoutControl",timeout:200);
+        
+            
+            //1:1000 map_Loading
+            var mapScalingTextEditField = mapWindow007.FindControlWithXPath(xPath : "Group:FrameworkDockSite/Group:DockHost/Group:SplitContainer/Pane:Workspace/Tab:TabbedMdiContainer/TabItem:DockingWindowContainerTabItem/Pane:DocumentWindow/Custom:MapPaneView/Custom:MapCoordinateReadoutControl/Custom:ScaleControl/ComboBox:ExtendedComboBox/Edit:TextBox",timeout:mapload_timeout);
+        
+            mapScalingTextEditField.Type("1:1000"+"{Enter}");
+            //StartTimer("007_ArcGISPro_1_1000_Map");
+
+            Log($"===> Is Appwindow Hung: {IsHungAppWindow(mapWindow007.NativeWindowHandle)}");
+            mapWindow007.FindControl(className : "Button:Button", title : "Drawing.  Click to cancel.",timeout:20);
+            //refreshwheel = paneBelowMapContainingRefreshWheel.FindControl(className: "Button:Button", title: "Refresh", timeout: mapload_timeout, continueOnError: true);
+            /*var refreshwheel6 = paneBelowMapContainingRefreshWheel.FindControl(className: "Button:Button", title: "Refresh", timeout: mapload_timeout, continueOnError: true);
+            if (refreshwheel6 == null)
+            {
+                CancelTimer("007_ArcGISPro_1_1000_Map");
+            }
+            else 
+            {
+                StopTimer("007_ArcGISPro_1_1000_Map");
+            }
+            
+            TakeScreenshot("011_ArcGISPro_1000_Loaded"); */
+                
+            // ===============================================================================
+            // Step No: 7
+            // Transaction Name: 008_ArcGISPro_1_25000_Map
+            // Description: Click the selected map
+            // How the metrics are measured:
+            //  Timer_start - after Opening the ,myorg window and selecting the map (to load)
+            //  Timer_End - After activating the help tab, and finding the help button (after find control is successful). This action is used to align the appropriate stop time both visually and programatically (see note)
+            // ***NOTE: The original test case stated "After teh refresh button stops", however, this button is unreliable as an indicator of ApplicationReady.
+            // ===============================================================================
+            Wait(step_wait);
+            Log($"===> 008_ArcGISPro_1_25000_Map");
+            TakeScreenshot("008_ArcGISPro_1_25000_Map");
+            
+            mapWindow007 = FindWindow(className : "Wpf Window:Window", title : projectTitle,timeout:450,continueOnError:true);
+            paneBelowMapContainingRefreshWheel = mapWindow007.FindControlWithXPath(xPath : "Group:FrameworkDockSite/Group:DockHost/Group:SplitContainer/Pane:Workspace/Tab:TabbedMdiContainer/TabItem:DockingWindowContainerTabItem/Pane:DocumentWindow/Custom:MapPaneView/Custom:MapCoordinateReadoutControl",timeout:200);
+        
+            
+            //1:25000 map_Loading
+            mapScalingTextEditField = mapWindow007.FindControlWithXPath(xPath : "Group:FrameworkDockSite/Group:DockHost/Group:SplitContainer/Pane:Workspace/Tab:TabbedMdiContainer/TabItem:DockingWindowContainerTabItem/Pane:DocumentWindow/Custom:MapPaneView/Custom:MapCoordinateReadoutControl/Custom:ScaleControl/ComboBox:ExtendedComboBox/Edit:TextBox",timeout:mapload_timeout);
+        
+            mapScalingTextEditField.Type("{CTRL+A}"+ "1:25000");
+            Type("{Enter}");
+            //StartTimer("007_ArcGISPro_1_1000_Map");
+
+            Log($"===> Is Appwindow Hung: {IsHungAppWindow(mapWindow007.NativeWindowHandle)}");
+            mapWindow007.FindControl(className : "Button:Button", title : "Drawing.  Click to cancel.",timeout:20);
+            var refreshwheel7 = paneBelowMapContainingRefreshWheel.FindControl(className: "Button:Button", title: "Refresh", timeout: mapload_timeout, continueOnError: true);
+            
+            if (refreshwheel7 == null)
+            {
+                CancelTimer("008_ArcGISPro_1_1000_Map");
+            }
+            else 
+            {
+                StopTimer("008_ArcGISPro_1_1000_Map");
+            }
+            
+            TakeScreenshot("008_ArcGISPro_1000_Loaded"); 
             Wait(step_wait);
             Wait(30);
             STOP();
             
             Wait(step_wait);
             Suite_TearDown();
-            
+                
+            }
+            catch{
+                Handler();    
+            }
         }
-        catch{
-            Handler();    
-        }
-    }
+    
     public void Handler(){
         Log($"===> {System.Reflection.MethodBase.GetCurrentMethod().Name}");
         
@@ -297,30 +366,49 @@ public class ArcGISPro : ScriptBase
         Log("===> Find Edge Window");
         var edgeSignInWindow = FindWindow(className: "Win32 Window:Chrome_WidgetWin_1", title: "Sign In*",processName: "msedge", timeout:5, continueOnError:true);
         if(edgeSignInWindow != null){
-            edgeSignInWindow.Focus();
-            Wait(2);
-            //typing the credentials for logging in and going to mainpage
-            Log("===> Find Username Input");
-            var userName = edgeSignInWindow.FindControl(className : "Edit:padding-left-2", title : "Username", text : "Username");
-            if(userName != null){
-                userName.Click();
-                userName.Type(MySettings["username"],cpm:300);
-            }
-            else{
-                ABORT("===> Failed:Find Username Input");
-            }
+            Log("===> Find Edge Credential Window");
+            var edgeSignInWindowCheck = FindWindow(className: "Win32 Window:Chrome_WidgetWin_1", title: "Sign In*",processName: "msedge", timeout:5, continueOnError:true);
+            if(edgeSignInWindowCheck != null){
+                try
+                {  
+                        Log("===> Find UsernameCheck input");
+                        var userNameCheck = edgeSignInWindowCheck.FindControl(className : "Edit:padding-left-2", title : "Username",timeout:mapload_timeout);
+                        if(userNameCheck != null){
+                            userNameCheck.Click();
+                        }
+                        else{
+                            Log("===> Failed: Find Username input");
+                        }
+                }
+                catch 
+                {
+                    Log("===> Find loginDropdown");
+                    var loginDropdown = edgeSignInWindowCheck.FindControl(className:"TabItem:accordion-title", title: "ArcGIS login",timeout:mapload_timeout);
+                    loginDropdown.Click();
+                    Type("{TAB}");
+                }
+                //typing the credentials for logging in and going to mainpage
+                Log("===> Find Username Input");
+                var userName = edgeSignInWindow.FindControl(className : "Edit:padding-left-2", title : "Username");
+                if(userName != null){
+                    userName.Click();
+                    userName.Type(MySettings["username"],cpm:300);
+                }
+                else{
+                    ABORT("===> Failed:Find Username Input");
+                }
             
-            Log("Find Password Input");
-            var password = edgeSignInWindow.FindControl(className : "Edit:padding-left-2", title : "Password", text : "Password");
-            if(password != null){
-                password.Click();
-                password.Type(MySettings["password"], cpm:300);
-            }else{
-                ABORT("===> Failed: Find Password Input");
+                Log("Find Password Input");
+                var password = edgeSignInWindow.FindControl(className : "Edit:padding-left-2", title : "Password", text : "Password");
+                if(password != null){
+                    password.Click();
+                    password.Type(MySettings["password"], cpm:300);
+                }else{
+                    ABORT("===> Failed: Find Password Input");
+                }
+            
+                edgeSignInWindow.FindControl(className : "Button:btn btn-small btn-fill", title : "Sign In",timeout:mapload_timeout).Click();
             }
-            
-            
-            edgeSignInWindow.FindControl(className : "Button:btn btn-small btn-fill", title : "Sign In",timeout:mapload_timeout).Click();
         }
         else{
             ABORT("===> Failed: Find Edge Window");
@@ -355,7 +443,7 @@ public class ArcGISPro : ScriptBase
         Wait(5);
         TakeScreenshot("003_ArcGISPro_MapSelection");
         //MyOrgWindow.FindControl(className : "Text:TextBlock", title : "My Organization",timeout:mapload_timeout).Click();
-        MyProjectWindow.FindControl(className : "Edit:TextBox", title : "Name Text Box",timeout:mapload_timeout).Type($"{projectTitle}.arpx");
+        MyProjectWindow.FindControl(className : "Edit:TextBox", title : "Name Text Box",timeout:mapload_timeout).Type($"{projectTitle}.aprx");
         MyProjectWindow.FindControl(className : "Button:Button", title : "OK",timeout:mapload_timeout).Click();
         
         //pointed to the main waindow where the map is loading 
@@ -375,4 +463,8 @@ public class ArcGISPro : ScriptBase
         TakeScreenshot("003_ArcGISPro_SelectedMap_Loaded");
     
     }
+    
+    [DllImport("user32.dll", CallingConvention = CallingConvention.Winapi, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool IsHungAppWindow(IntPtr hwnd);
 }
